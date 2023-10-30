@@ -1,0 +1,16 @@
+Seed structure,Comparison,Chi square,P value
+Balloon structures,endangered vs non-endangered,0.077,0.78144
+Balloon structures,endangered vs non-native,1.663,0.19717
+Balloon structures,non-native vs non-endangered,1.396,0.23746
+Elongated appendages,endangered vs non-endangered,0.621,0.43071
+Elongated appendages,endangered vs non-native,6.932,0.00846
+Elongated appendages,non-native vs non-endangered,5.33,0.02096
+Flat appendages,endangered vs non-endangered,0,1
+Flat appendages,endangered vs non-native,1.284,0.25713
+Flat appendages,non-native vs non-endangered,1.489,0.22242
+No appendages,endangered vs non-endangered,1.267,0.26032
+No appendages,endangered vs non-native,20.074,1e-5
+No appendages,non-native vs non-endangered,33.058,0
+Nutrient containing structures,endangered vs non-endangered,12.236,4.7e-4
+Nutrient containing structures,endangered vs non-native,0.012,0.91138
+Nutrient containing structures,non-native vs non-endangered,5.515,0.01885

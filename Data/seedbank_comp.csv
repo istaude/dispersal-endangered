@@ -1,0 +1,10 @@
+Seedbank type,Comparison,Chi square,P value
+long-term persistent,endangered vs non-endangered,3.866,0.04929
+long-term persistent,endangered vs non-native,0,1
+long-term persistent,non-native vs non-endangered,0.985,0.32092
+short-term persistent,endangered vs non-endangered,0.003,0.95884
+short-term persistent,endangered vs non-native,1.869,0.17165
+short-term persistent,non-native vs non-endangered,2.877,0.08983
+transient,endangered vs non-endangered,1.936,0.16411
+transient,endangered vs non-native,1.092,0.29606
+transient,non-native vs non-endangered,4.942,0.02621

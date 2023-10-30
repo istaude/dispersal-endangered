@@ -1,0 +1,22 @@
+# load packages
+library(rvest)
+library(tidyverse)
+library(flora)
+library(readxl)
+library(rWCVP)
+library(rWCVPdata)
+library(ggpubr)
+library(patchwork)
+library(hrbrthemes)
+library(sysfonts)
+library(showtext)
+library(hrbrthemes)
+library(ggchicklet)
+library(see)
+library(EnvStats)
+library(emmeans)
+# add Arial Narrow for plotting
+font_paths("C:/Windows/Fonts")
+font_add("Arial Narrow", regular = "arialn.ttf", italic = "arialni.ttf", 
+         bold = "arialnb.ttf")
+showtext_auto()
