@@ -87,13 +87,13 @@ navsnona <- left_join(navsnona,
 navsnona %>% 
   filter(variable != "count_mean_seedbank_index") %>% 
 ggplot(aes(x = species_cat, y = count, fill = na_non_na)) +
-  geom_chicklet(position = ggplot2::position_stack(reverse = FALSE), col = "#030708") +
+  geom_chicklet(position = ggplot2::position_stack(reverse = FALSE), col = "gray60") +
   geom_text(aes(label = percentage_text, x = species_cat, y = 2600), family = "Arial Narrow",
-            size = 4, fontface = "italic", check_overlap = T, col = "gray40") +
+            size = 4, fontface = "italic", check_overlap = T, col = "gray60") +
   coord_flip() +
   facet_wrap(vars(variable),
              labeller = labeller(variable = as_labeller(facet_labels))) +
-  scale_fill_manual(values = c("NA" = "#f6f6f6", "Data" = "#030708")) +
+  scale_fill_manual(values = c("NA" = "#f6f6f6", "Data" = "gray60")) +
   scale_y_continuous(limits = c(0,2900), breaks = c(0, 1000, 2000)) +
   labs(title = "Data availability per trait",
        x = "",
@@ -104,7 +104,7 @@ ggplot(aes(x = species_cat, y = count, fill = na_non_na)) +
               axis_text_size = 14,
               strip_text_size = 14,
               strip_text_face = "italic",
-              plot_title_size = 14,
+              plot_title_size = 18,
               axis_title_just = "mm") +
   theme(legend.position = "bottom", legend.title = element_blank(), 
         legend.text = element_text(size= 14),
@@ -164,19 +164,36 @@ ggplot(aes(species_cat, y = seedmass,
   labs(y = "Seed mass (mg)", 
        x = "",
        title = "Seed mass") +
-  scale_fill_manual(values = c(`native non-endangered` = "#f2f3f4" , 
-                               `native endangered` = "#ae0472" , 
-                               `non-native` = "#CBDD33" )) +
+  scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                               `native endangered` = "#fbcbe0" , 
+                               `non-native` = "#adffe4" )) +
   scale_color_manual(values = c(`native non-endangered` = "#e8e9eb" , 
-                                `native endangered` = "#ae0472" , 
-                                `non-native` = "#CBDD33" )) -> fig_sw)
+                                `native endangered` = "#fbcbe0" , 
+                                `non-native` = "#adffe4" )) -> fig_sw)
 
 
-
+  
 mod_sm <- lm(log10(seedmass) ~ species_cat, data = dt)
 summary(mod_sm)
 emmeans(mod_sm, pairwise ~ species_cat, type = "response")
 
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+dt <- dt %>% mutate(genus = word(taxon_name, 1)) %>% left_join(plant_lookup())
+
+mod_sm <- lmer(log10(seedmass) ~ species_cat + (1|family), data = dt)
+summary(mod_sm)
+(emmeans(mod_sm, pairwise ~ species_cat, type = "response")[[2]] %>% plot() +
+  geom_vline(xintercept = 1) +
+  theme_ipsum(
+    grid = "",
+    axis_title_size = 14,
+    axis_text_size = 14,
+    strip_text_size = 14,
+    axis_title_just = "mm"
+  ) +
+  labs(y = "", x = "Log-ratio of seed weight") -> fig_sw_supp)
+  
 # terminal velocity -------------------------------------------------------
 
 (dt %>% filter(!is.na(termvel_mean)) %>% 
@@ -217,18 +234,32 @@ ggplot(aes(species_cat, y = termvel_mean,
   labs(y = "Terminal velocity (m/s)", 
        x = "",
        title = "Terminal velocity") +
-  scale_fill_manual(values = c(`native non-endangered` = "#f2f3f4" , 
-                               `native endangered` = "#ae0472" , 
-                               `non-native` = "#CBDD33" )) +
+  scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                               `native endangered` = "#fbcbe0" , 
+                               `non-native` = "#adffe4" )) +
   scale_color_manual(values = c(`native non-endangered` = "#e8e9eb" , 
-                                `native endangered` = "#ae0472" , 
-                                `non-native` = "#CBDD33" )) -> fig_tv)
+                                `native endangered` = "#fbcbe0" , 
+                                `non-native` = "#adffe4" )) -> fig_tv)
 
 
 mod_tv <- lm(termvel_mean ~ species_cat, data = dt)
 summary(mod_tv)
 emmeans(mod_tv, pairwise ~ species_cat, type = "response")
 
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+mod_tv <- lmer(termvel_mean ~ species_cat + (1|family), data = dt)
+summary(mod_tv)
+(emmeans(mod_tv, pairwise ~ species_cat, type = "response")[[2]] %>% plot() +
+  geom_vline(xintercept = 0) +
+  theme_ipsum(
+    grid = "",
+    axis_title_size = 14,
+    axis_text_size = 14,
+    strip_text_size = 14,
+    axis_title_just = "mm"
+  ) +
+  labs(y = "", x = "Difference in terminal velocity (m/s)") -> fig_tv_supp)
 
 # dispersal distance ------------------------------------------------------
 
@@ -270,12 +301,12 @@ ggplot(aes(species_cat, y = dispersal_distance,
   labs(y = "Distance class", 
        x = "",
        title = "Dispersal distance") +
-  scale_fill_manual(values = c(`native non-endangered` = "#f2f3f4" , 
-                               `native endangered` = "#ae0472" , 
-                               `non-native` = "#CBDD33" )) +
+  scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                               `native endangered` = "#fbcbe0" , 
+                               `non-native` = "#adffe4" )) +
   scale_color_manual(values = c(`native non-endangered` = "#e8e9eb" , 
-                                `native endangered` = "#ae0472" , 
-                                `non-native` = "#CBDD33" )) -> fig_dd)
+                                `native endangered` = "#fbcbe0" , 
+                                `non-native` = "#adffe4" )) -> fig_dd)
 
 
 
@@ -283,6 +314,20 @@ mod_dd <- lm(dispersal_distance ~ species_cat, data = dt)
 summary(mod_dd)
 emmeans(mod_dd, pairwise ~ species_cat, type = "response")
 
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+mod_dd <- lmer(dispersal_distance ~ species_cat + (1|family), data = dt)
+summary(mod_dd)
+(emmeans(mod_dd, pairwise ~ species_cat, type = "response")[[2]] %>% plot() +
+  geom_vline(xintercept = 0) +
+  theme_ipsum(
+    grid = "",
+    axis_title_size = 14,
+    axis_text_size = 14,
+    strip_text_size = 14,
+    axis_title_just = "mm"
+  ) +
+  labs(y = "", x = "Difference in dispersal distance") -> fig_dd_supp)
 
 # germination frequency ---------------------------------------------------
 
@@ -327,17 +372,32 @@ dt$species_cat <- factor(dt$species_cat, levels = custom_order)
     labs(y = "Germination rate (%)", 
          x = "",
          title = "Germination rate") +
-    scale_fill_manual(values = c(`native non-endangered` = "#f2f3f4" , 
-                                 `native endangered` = "#ae0472" , 
-                                 `non-native` = "#CBDD33" )) +
+    scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                                 `native endangered` = "#fbcbe0" , 
+                                 `non-native` = "#adffe4" )) +
     scale_color_manual(values = c(`native non-endangered` = "#e8e9eb" , 
-                                  `native endangered` = "#ae0472" , 
-                                  `non-native` = "#CBDD33" )) -> fig_germ)
+                                  `native endangered` = "#fbcbe0" , 
+                                  `non-native` = "#adffe4" )) -> fig_germ)
 
 
 mod_germ <- lm(germination_freq_mean ~ species_cat, data = dt)
 summary(mod_germ)
 emmeans(mod_germ, pairwise ~ species_cat)
+
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+mod_germ <- lmer(germination_freq_mean ~ species_cat + (1|family), data = dt)
+summary(mod_germ)
+(emmeans(mod_germ, pairwise ~ species_cat)[[2]] %>% plot() +
+  geom_vline(xintercept = 0) +
+  theme_ipsum(
+    grid = "",
+    axis_title_size = 14,
+    axis_text_size = 14,
+    strip_text_size = 14,
+    axis_title_just = "mm"
+  ) +
+  labs(y = "", x = "Difference in germination rate (%)") -> fig_germ_supp)
 
 
 # dispersal mode ----------------------------------------------------------
@@ -402,13 +462,9 @@ dispmo <- dispmo %>%
     plot_title_size = 14,
     axis_title_just = "mm"
   ) +
-  scale_fill_manual(
-    values = c(
-      `native non-endangered` = "#e8e9eb" ,
-      `native endangered` = "#ae0472" ,
-      `non-native` = "#CBDD33"
-    )
-  ) +
+    scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                                 `native endangered` = "#fbcbe0" , 
+                                 `non-native` = "#adffe4" ))  +
   theme(legend.position = "none",
         legend.title = element_blank()) +
   labs(x = "", y = "",
@@ -557,13 +613,9 @@ sestr$seed_str <-
     plot_title_size = 14,
     axis_title_just = "mm"
   ) +
-  scale_fill_manual(
-    values = c(
-      `native non-endangered` = "#e8e9eb" ,
-      `native endangered` = "#ae0472" ,
-      `non-native` = "#CBDD33"
-    )
-  ) +
+    scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                                 `native endangered` = "#fbcbe0" , 
+                                 `non-native` = "#adffe4" ))  +
   theme(legend.position = "none",
         legend.title = element_blank() ) +
   labs(x = "", 
@@ -687,13 +739,9 @@ sbank$most_frequent_seedbank_type <-
       plot_title_size = 14,
       axis_title_just = "mm"
     ) +
-    scale_fill_manual(
-      values = c(
-        `native non-endangered` = "#e8e9eb" ,
-        `native endangered` = "#ae0472" ,
-        `non-native` = "#CBDD33"
-      )
-    ) +
+    scale_fill_manual(values = c(`native non-endangered` = "#e8e9eb" , 
+                                 `native endangered` = "#fbcbe0" , 
+                                 `non-native` = "#adffe4" ))  +
     theme(legend.position = "none",
           legend.title = element_blank()) +
     labs(x = "", 
@@ -817,7 +865,7 @@ plot_lower <- (fig_dispmo + fig_sestr + fig_seedb)
 
 plot_upper / plot_lower + plot_layout(heights = c(.5, .5, 2), guides = "collect") +
   plot_annotation(tag_levels = "a", title = "Dispersal ecology of endangered versus native and non-native plants",
-                  theme = theme(plot.title = element_text(size = 14, 
+                  theme = theme(plot.title = element_text(size = 18, 
                                                           family = "Arial Narrow",
                                                           face = "bold"))) &
   theme(legend.position = "bottom", legend.text=element_text(size=14))
@@ -832,6 +880,20 @@ ggsave(width = 11, height = 11, bg = "white",
 showtext_opts(dpi=96)
 
 
-# compare non-native that escaped gardens to endangered cg species --------
+# supp plots for accounting for phylogeny
+fig_tv_supp <- fig_tv_supp + theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+fig_germ_supp <- fig_germ_supp + theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
 
+(fig_sw_supp + fig_tv_supp) / (fig_dd_supp + fig_germ_supp) + 
+  plot_annotation(title = "Contrasts between endangered, native and non-native plants when accounting for phylogeny", 
+                  theme = theme(plot.title = element_text(hjust = 0.5, family = "Arial Narrow", face = 2, size = 14)),
+                  tag_levels = 'a') +
+  theme(axis.title.y = element_text(angle = 90, vjust = 2, family = "Arial Narrow"))
+
+
+showtext_opts(dpi=600)
+ggsave(width = 8.5, height = 5.45, bg = "white",
+       file = "Figures/fig1-supp.png",
+       dpi = 600)
+showtext_opts(dpi=96)

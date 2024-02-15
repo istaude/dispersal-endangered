@@ -15,6 +15,8 @@ library(ggchicklet)
 library(see)
 library(EnvStats)
 library(emmeans)
+library(taxonlookup)
+library(lme4)
 # add Arial Narrow for plotting
 font_paths("C:/Windows/Fonts")
 font_add("Arial Narrow", regular = "arialn.ttf", italic = "arialni.ttf", 

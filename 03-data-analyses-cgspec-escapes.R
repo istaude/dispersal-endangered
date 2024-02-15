@@ -35,7 +35,7 @@ wcvp_match_dx <- wcvp_match_names(dx, wcvp_names = wcvp_names,
                                   fuzzy = T)
 
 wcvp_acc_dx <- wcvp_match_dx %>% select(species, wcvp_status, wcvp_accepted_id)
-View(wcvp_acc_dx)
+#View(wcvp_acc_dx)
 
 # give preference to accepted (and then synonyms) names, 
 # if there are multiple rows for one and 
@@ -111,17 +111,35 @@ dt %>% count(species_cat)
    labs(y = "Seed mass (mg)", 
         x = "",
         title = "Seed mass") +
-   scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                 `non-native garden escapees` = "#ecebed"
+   scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                 `non-native garden escapees` = "#adffe4"
    )) +
-   scale_color_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#9d9aa1"
+   scale_color_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
    )) -> fig2_sw)
+
 
 
 mod_sw <- lm(log10(seedmass) ~ species_cat, data = dt)
 summary(mod_sw)
 emmeans(mod_sw, pairwise ~ species_cat, type = "response")
+
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+dt <- dt %>% mutate(genus = word(taxon_name, 1)) %>% left_join(plant_lookup())
+
+mod_sw <- lmer(log10(seedmass) ~ species_cat + (1|family), data = dt)
+summary(mod_sw)
+(emmeans(mod_sw, pairwise ~ species_cat, type = "response")[[2]] %>% plot() +
+    geom_vline(xintercept = 1) +
+    theme_ipsum(
+      grid = "",
+      axis_title_size = 14,
+      axis_text_size = 14,
+      strip_text_size = 14,
+      axis_title_just = "mm"
+    ) +
+    labs(y = "", x = "Log-ratio of seed weight") -> fig2_sw_supp)
 
 # terminal velocity -------------------------------------------------------
 
@@ -163,17 +181,32 @@ emmeans(mod_sw, pairwise ~ species_cat, type = "response")
    labs(y = "Terminal velocity (m/s)", 
         x = "",
         title = "Terminal velocity") +
-   scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                 `non-native garden escapees` = "#ecebed"
+   scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                 `non-native garden escapees` = "#adffe4"
    )) +
-   scale_color_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#9d9aa1"
+   scale_color_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
    )) -> fig2_tv)
 
 
 mod_tv <- lm(termvel_mean ~ species_cat, data = dt)
 summary(mod_tv)
 emmeans(mod_tv, pairwise ~ species_cat, type = "response")
+
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+mod_tv <- lmer(termvel_mean ~ species_cat + (1|family), data = dt)
+summary(mod_tv)
+(emmeans(mod_tv, pairwise ~ species_cat, type = "response")[[2]] %>% plot() +
+    geom_vline(xintercept = 1) +
+    theme_ipsum(
+      grid = "",
+      axis_title_size = 14,
+      axis_text_size = 14,
+      strip_text_size = 14,
+      axis_title_just = "mm"
+    ) +
+    labs(y = "", x = "Difference in terminal velocity (m/s)") -> fig2_tv_supp)
 
 # dispersal distance ------------------------------------------------------
 
@@ -215,11 +248,11 @@ emmeans(mod_tv, pairwise ~ species_cat, type = "response")
    labs(y = "Distance class", 
         x = "",
         title = "Dispersal distance") +
-   scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                 `non-native garden escapees` = "#ecebed"
+   scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                 `non-native garden escapees` = "#adffe4"
    )) +
-   scale_color_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#9d9aa1"
+   scale_color_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
    )) -> fig2_dd)
 
 
@@ -227,6 +260,20 @@ mod_dd <- lm(dispersal_distance ~ species_cat, data = dt)
 summary(mod_dd)
 emmeans(mod_dd, pairwise ~ species_cat, type = "response")
 
+# check if there is an influence of phylogeny by including family, genera
+# as random effect
+mod_dd <- lmer(dispersal_distance ~ species_cat + (1|family), data = dt)
+summary(mod_dd)
+(emmeans(mod_dd, pairwise ~ species_cat, type = "response")[[2]] %>% plot() +
+    geom_vline(xintercept = 0) +
+    theme_ipsum(
+      grid = "",
+      axis_title_size = 14,
+      axis_text_size = 14,
+      strip_text_size = 14,
+      axis_title_just = "mm"
+    ) +
+    labs(y = "", x = "Difference in dispersal distance") -> fig2_dd_supp)
 
 # germination frequency ---------------------------------------------------
 
@@ -267,11 +314,11 @@ emmeans(mod_dd, pairwise ~ species_cat, type = "response")
    labs(y = "Germination rate (%)", 
         x = "",
         title = "Germination rate") +
-   scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                 `non-native garden escapees` = "#ecebed"
+   scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                 `non-native garden escapees` = "#adffe4"
    )) +
-   scale_color_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#9d9aa1"
+   scale_color_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
    )) -> fig2_germ)
 
 
@@ -279,6 +326,18 @@ mod_germ <- lm(germination_freq_mean ~ species_cat, data = dt)
 summary(mod_germ)
 emmeans(mod_germ, pairwise ~ species_cat, type = "response")
 
+mod_germ <- lmer(germination_freq_mean ~ species_cat + (1|family), data = dt)
+summary(mod_germ)
+(emmeans(mod_germ, pairwise ~ species_cat)[[2]] %>% plot() +
+    geom_vline(xintercept = 0) +
+    theme_ipsum(
+      grid = "",
+      axis_title_size = 14,
+      axis_text_size = 14,
+      strip_text_size = 14,
+      axis_title_just = "mm"
+    ) +
+    labs(y = "", x = "Difference in germination rate (%)") -> fig2_germ_supp)
 
 # dispersal mode ----------------------------------------------------------
 
@@ -331,8 +390,8 @@ dispmo$dispersal_mode <- factor(dispmo$dispersal_mode, levels = custom_order2)
       plot_title_size = 14,
       axis_title_just = "mm"
     ) +
-    scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#ecebed"
+    scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
     )) +
     theme(legend.position = "none",
           legend.title = element_blank()) +
@@ -439,7 +498,7 @@ sestr$seed_str <-
               hjust = -0.1,
               col = "gray40",
               family = "Arial Narrow", fontface = "italic") +
-    scale_y_continuous(limits = c(0,0.8)) +
+    scale_y_continuous(limits = c(0,1)) +
     coord_flip() +
     theme_ipsum(
       grid = "",
@@ -450,8 +509,8 @@ sestr$seed_str <-
       plot_title_size = 14,
       axis_title_just = "mm"
     ) +
-    scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#ecebed"
+    scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
     )) +
     theme(legend.position = "none",
           legend.title = element_blank() ) +
@@ -530,7 +589,7 @@ sbank$most_frequent_seedbank_type <-
               hjust = -0.1,
               col = "gray40",
               family = "Arial Narrow", fontface = "italic") +
-    scale_y_continuous(limits = c(0,1.08)) +
+    scale_y_continuous(limits = c(0,1.14)) +
     coord_flip() +
     theme_ipsum(
       grid = "",
@@ -541,8 +600,8 @@ sbank$most_frequent_seedbank_type <-
       plot_title_size = 14,
       axis_title_just = "mm"
     ) +
-    scale_fill_manual(values = c( `conservation gardening species` = "#4004ae" , 
-                                  `non-native garden escapees` = "#ecebed"
+    scale_fill_manual(values = c( `conservation gardening species` = "#fbcbe0" , 
+                                  `non-native garden escapees` = "#adffe4"
     )) +
     theme(legend.position = "none",
           legend.title = element_blank()) +
@@ -637,7 +696,7 @@ plot_lower <- (fig2_dispmo + fig2_sestr + fig2_seedb)
 
 plot_upper / plot_lower + plot_layout(heights = c(.5, .5, 2), guides = "collect") +
   plot_annotation(tag_levels = "a", title = "Dispersal ecology of non-native garden escapees versus conservation gardening species",
-                  theme = theme(plot.title = element_text(size = 14, 
+                  theme = theme(plot.title = element_text(size = 18, 
                                                           family = "Arial Narrow",
                                                           face = "bold"))) &
   theme(legend.position = "bottom", legend.text=element_text(size=14))
@@ -646,7 +705,26 @@ plot_upper / plot_lower + plot_layout(heights = c(.5, .5, 2), guides = "collect"
 
 # save plot
 showtext_opts(dpi=600)
-ggsave(width = 11, height = 11, bg = "white",
-       file = "Figures/fig2.png",
+ggsave(width = 10, height = 11, bg = "white",
+       file = "Figures/fig2.pdf",
+       dpi = 600)
+showtext_opts(dpi=96)
+
+
+# supp plots for accounting for phylogeny
+fig2_tv_supp <- fig2_tv_supp + theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+fig2_germ_supp <- fig2_germ_supp + theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+
+(fig2_sm_supp + fig2_tv_supp) / (fig2_dd_supp + fig2_germ_supp) + 
+  plot_annotation(title = "Contrasts between non-native garden escapees and conservation gardening plants when accounting for phylogeny", 
+                  theme = theme(plot.title = element_text(hjust = 0.5, family = "Arial Narrow", face = 2, size = 14)),
+                  tag_levels = 'a') +
+  theme(axis.title.y = element_text(angle = 90, vjust = 2, family = "Arial Narrow"))
+
+
+showtext_opts(dpi=600)
+ggsave(width = 9.94, height = 4.85, bg = "white",
+       file = "Figures/fig2-supp.png",
        dpi = 600)
 showtext_opts(dpi=96)
